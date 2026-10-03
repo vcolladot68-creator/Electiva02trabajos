@@ -1,0 +1,37 @@
+name: Hola Mundo y notificacion
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  ejecutar-y-notificar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ejecutar Hola Mundo
+        run: node hola.js
+
+      - name: Enviar notificacion a ntfy
+        env:
+          REPOSITORIO: ${{ github.repository }}
+          USUARIO: ${{ github.actor }}
+        run: |
+          curl --fail --show-error \
+            --connect-timeout 10 \
+            --max-time 30 \
+            -H "Title: Practica 4 - Vanessa Collado" \
+            --data "Se subio codigo a main en $REPOSITORIO. Usuario: $USUARIO. Hola mundo ejecutado correctamente." \
+            https://ntfy.sh/devops-itla
